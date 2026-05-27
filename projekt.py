@@ -138,6 +138,19 @@ class GreenScreenApp:
 
         info.pack(pady=10)
 
+        self.greenScreenEnabled = True
+
+        self.toggleButton = tk.Button(
+            panel,
+            text="Green Screen: ON",
+            font=("Arial", 12, "bold"),
+            bg="#008800",
+            fg="white",
+            command=self.toggle_green_screen
+        )
+
+        self.toggleButton.pack(pady=10)
+
         self.buttonTlo = tk.Button(
             panel,
             text="Wybierz Tlo",
@@ -147,9 +160,7 @@ class GreenScreenApp:
             command=self.wybierz_tlo
         )
 
-        self.buttonTlo.pack(
-            pady=20
-        )
+        self.buttonTlo.pack(pady=20)
 
         self.tloPreview = tk.Label(
             panel,
@@ -180,9 +191,26 @@ class GreenScreenApp:
             expand=True
         )
 
-        # Start
         self.aktualizuj_podglad_tla()
         self.update_frame()
+
+    def toggle_green_screen(self):
+
+        self.greenScreenEnabled = not self.greenScreenEnabled
+
+        if self.greenScreenEnabled:
+
+            self.toggleButton.config(
+                text="Green Screen: ON",
+                bg="#008800"
+            )
+
+        else:
+
+            self.toggleButton.config(
+                text="Green Screen: OFF",
+                bg="#880000"
+            )
 
     def wybierz_tlo(self):
 
@@ -323,13 +351,19 @@ class GreenScreenApp:
 
             noweTlo = tloFloat * maskaFloat
 
-            wynik = osoba + noweTlo
+            if self.greenScreenEnabled:
 
-            wynik = np.clip(
-                wynik,
-                0,
-                255
-            ).astype(np.uint8)
+                wynik = osoba + noweTlo
+
+                wynik = np.clip(
+                    wynik,
+                    0,
+                    255
+                ).astype(np.uint8)
+
+            else:
+
+                wynik = klatka
 
             hsvKolor = np.uint8([
                 [[(hMin + hMax) // 2, 255, 255]]
@@ -382,6 +416,7 @@ class GreenScreenApp:
 
         self.kamera.release()
         self.root.destroy()
+
 
 root = tk.Tk()
 
